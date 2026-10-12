@@ -1,0 +1,515 @@
+---
+import HeroDrawing from './HeroDrawing.astro';
+import { VIEW_FULL, VIEW_STATES, SPARK_POINTS } from './hero-geometry';
+import { heroStates } from '@/content/home';
+
+const vb = (b: readonly number[]) => b.join(' ');
+// Nella vista sequenziale (reduced motion / no-JS) ogni riquadro mostra solo il proprio elemento
+const isolate = (i: number) =>
+  [1, 2, 3, 4, 5].map((n) => `--o${n}:${n === i + 1 ? 1 : 0}`).join(';') + ';--fo:.55';
+---
+
+<section class="hero" id="hero" aria-labelledby="hero-title" data-state="0">
+  <HeroDrawing />
+
+  <div class="hero-frame">
+    <div class="frame hero-grid">
+      <!-- Titolo -->
+      <div class="hero-head">
+        <p class="label hero-kicker">
+          <span class="text-brand-ink">●</span>&ensp;Carpenteria metallica · Scafati (SA)
+        </p>
+        <h1 id="hero-title" class="hero-title">
+          <span class="block">Carpenteria</span>
+          <span class="block">metallica</span>
+          <span class="block text-bone-muted">su misura</span>
+        </h1>
+      </div>
+
+      <!-- Disegno -->
+      <figure class="hero-drawing" aria-hidden="true">
+        <svg class="hero-svg" viewBox={vb(VIEW_FULL)} preserveAspectRatio="xMidYMid meet">
+          <use href="#dl-drawing" class="hero-use"></use>
+          <g class="spark" transform={`translate(${SPARK_POINTS[0].join(' ')})`}>
+            <circle class="spark-glow" r="16"></circle>
+            <g class="spark-rays">
+              {
+                Array.from({ length: 12 }, (_, i) => {
+                  const a = (i / 12) * Math.PI * 2 + (i % 2 ? 0.2 : 0);
+                  const r1 = 5;
+                  const r2 = i % 3 === 0 ? 26 : 16;
+                  return (
+                    <line
+                      x1={(Math.cos(a) * r1).toFixed(1)}
+                      y1={(Math.sin(a) * r1).toFixed(1)}
+                      x2={(Math.cos(a) * r2).toFixed(1)}
+                      y2={(Math.sin(a) * r2).toFixed(1)}
+                    />
+                  );
+                })
+              }
+            </g>
+            <circle class="spark-core" r="2.6"></circle>
+          </g>
+        </svg>
+      </figure>
+
+      <!-- Testo: intro + 5 stati sovrapposti -->
+      <div class="hero-copy">
+        <div class="hero-intro" data-panel="0">
+          <p class="hero-lede">
+            Padre e figlio, un laboratorio a Scafati. Disegniamo, saldiamo e montiamo ferro che dura:
+            cancelli, ringhiere, recinzioni, strutture.
+          </p>
+          <div class="mt-6 flex flex-wrap gap-3">
+            <a href="/contatti" class="btn btn-primary">
+              Richiedi un sopralluogo <span class="btn-arrow" aria-hidden="true">→</span>
+            </a>
+            <a href="/lavori" class="btn btn-ghost">Vedi i lavori</a>
+          </div>
+        </div>
+
+        {
+          heroStates.map((s, i) => (
+            <div class="hero-panel" data-panel={i + 1}>
+              <p class="label">
+                <span class="label-red tabular">{s.n}</span> / 05 — {s.quote}
+              </p>
+              <p class="hero-panel-name">{s.name}</p>
+              <p class="hero-panel-line">{s.line}</p>
+              <a href={s.href} class="hero-panel-link link-draw">
+                {s.cta} <span aria-hidden="true">→</span>
+              </a>
+            </div>
+          ))
+        }
+        <div class="hero-panel" data-panel="6">
+          <p class="label"><span class="label-red">05</span> / 05 — Prospetto completo</p>
+          <p class="hero-panel-name">Un solo laboratorio</p>
+          <p class="hero-panel-line">
+            Dal cancello alla struttura portante. Un interlocutore, una squadra, dalla misura alla posa.
+          </p>
+          <a href="/contatti" class="hero-panel-link link-draw">Richiedi un sopralluogo <span aria-hidden="true">→</span></a>
+        </div>
+      </div>
+
+      <!-- Indicatore di progresso verticale -->
+      <nav class="hero-progress" aria-label="Elementi del prospetto">
+        <span class="hero-progress-track" aria-hidden="true"><span class="hero-progress-fill"></span></span>
+        <ol>
+          {
+            heroStates.map((s, i) => (
+              <li>
+                <button type="button" class="hero-tick" data-tick={i + 1} aria-label={`${s.n} — ${s.name}`}>
+                  <span class="tabular">{s.n}</span>
+                </button>
+              </li>
+            ))
+          }
+        </ol>
+      </nav>
+
+      <!-- Cartiglio -->
+      <div class="hero-titleblock label" aria-hidden="true">
+        <span>Tav. <span class="hero-tav tabular">00</span> / 05</span>
+        <span class="hidden sm:inline">Prospetto principale</span>
+        <span class="hidden md:inline">Scala 1:50</span>
+        <span class="hero-scroll">Scorri ↓</span>
+      </div>
+    </div>
+    <a href="#dopo-hero" class="hero-skip label sr-only-focusable">Salta l’animazione</a>
+  </div>
+
+  <!-- Vista sequenziale: prefers-reduced-motion o JS disattivato -->
+  <ol class="hero-seq frame" aria-label="I nostri lavori in ferro">
+    {
+      heroStates.map((s, i) => (
+        <li class="hero-seq-item">
+          <svg viewBox={vb(VIEW_STATES[i])} class="hero-seq-svg" aria-hidden="true">
+            <use href="#dl-drawing" style={isolate(i)} />
+          </svg>
+          <div>
+            <p class="label">
+              <span class="label-red">{s.n}</span> / 05
+            </p>
+            <h2 class="hero-panel-name">{s.name}</h2>
+            <p class="hero-panel-line">{s.line}</p>
+            <a href={s.href} class="hero-panel-link link-draw">
+              {s.cta} <span aria-hidden="true">→</span>
+            </a>
+          </div>
+        </li>
+      ))
+    }
+  </ol>
+</section>
+<div id="dopo-hero"></div>
+
+<script>
+  import { initHero } from '@/scripts/hero';
+  initHero();
+</script>
+
+<style>
+  .hero {
+    position: relative;
+  }
+
+  /* ---------- Frame (statico di default) ---------- */
+  .hero-frame {
+    position: relative;
+    min-height: 100svh;
+    padding-top: 5.5rem;
+    padding-bottom: 1.25rem;
+    display: flex;
+  }
+  .hero-grid {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 1.5rem;
+    grid-template-rows: auto minmax(14rem, 1fr) auto auto;
+    grid-template-areas:
+      'head progress'
+      'drawing progress'
+      'copy copy'
+      'block block';
+    row-gap: 1rem;
+  }
+  @media (min-width: 1024px) {
+    .hero-grid {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr) 3rem;
+      grid-template-rows: auto 1fr auto;
+      grid-template-areas:
+        'head drawing progress'
+        'copy drawing progress'
+        'block block block';
+      column-gap: 2rem;
+    }
+  }
+  .hero-head {
+    grid-area: head;
+  }
+  .hero-drawing {
+    grid-area: drawing;
+    position: relative;
+    min-height: 0;
+    margin: 0;
+  }
+  .hero-copy {
+    grid-area: copy;
+    position: relative;
+    align-self: end;
+  }
+  .hero-progress {
+    grid-area: progress;
+  }
+  .hero-titleblock {
+    grid-area: block;
+  }
+
+  .hero-kicker {
+    margin-bottom: 1rem;
+  }
+  .hero-title {
+    font-size: clamp(3.25rem, 13.5vw, 9rem);
+    line-height: 0.84;
+    transform-origin: 0 0;
+    will-change: transform;
+  }
+  @media (min-width: 1024px) {
+    .hero-title {
+      font-size: clamp(5rem, 8.4vw, 10.5rem);
+    }
+  }
+  .hero-lede {
+    max-width: 34rem;
+    font-size: var(--text-lede);
+    line-height: 1.4;
+    color: var(--color-bone-muted);
+  }
+
+  .hero-svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+  @media (max-width: 767px) {
+    .hero-use {
+      --sw-iron: 2.6;
+      --sw-fine: 1.6;
+      --sw-facade: 1.5;
+    }
+  }
+
+  /* Scintilla */
+  .spark {
+    opacity: 0;
+    pointer-events: none;
+  }
+  .spark-glow {
+    fill: var(--color-brand);
+    opacity: 0.35;
+  }
+  .spark-core {
+    fill: #ffd9c9;
+  }
+  .spark-rays line {
+    stroke: var(--color-brand-ink);
+    stroke-width: 1.4;
+    stroke-linecap: round;
+  }
+
+  /* Pannelli */
+  .hero-panel-name {
+    margin-top: 0.75rem;
+    font-family: var(--font-display);
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: clamp(2.5rem, 5vw, 4.5rem);
+    line-height: 0.9;
+  }
+  .hero-panel-line {
+    margin-top: 0.875rem;
+    max-width: 30rem;
+    color: var(--color-bone-muted);
+    font-size: 1.0625rem;
+    line-height: 1.5;
+  }
+  .hero-panel-link {
+    display: inline-block;
+    margin-top: 1.25rem;
+    font-weight: 600;
+  }
+
+  /* Indicatore */
+  .hero-progress {
+    display: none;
+    position: relative;
+    align-self: center;
+    height: min(56vh, 26rem);
+  }
+  .hero-progress ol {
+    position: relative;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .hero-progress-track {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 1px;
+    background: var(--color-graphite-600);
+  }
+  .hero-progress-fill {
+    position: absolute;
+    inset: 0;
+    background: var(--color-brand);
+    transform-origin: top;
+    transform: scaleY(0);
+  }
+  .hero-tick {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    color: var(--color-bone-faint);
+    cursor: pointer;
+  }
+  .hero-tick span {
+    display: grid;
+    place-items: center;
+    width: 1.875rem;
+    height: 1.875rem;
+    background: var(--color-steel);
+    border: 1px solid var(--color-graphite-600);
+    border-radius: 999px;
+    transition:
+      border-color 0.4s,
+      color 0.4s,
+      background-color 0.4s;
+  }
+  .hero-tick[aria-current='step'] span {
+    border-color: var(--color-brand);
+    background: var(--color-brand);
+    color: var(--color-bone);
+  }
+
+  .hero-use {
+    --o5: 0.35;
+  }
+  .hero-titleblock {
+    display: none;
+    gap: 1.5rem;
+    justify-content: space-between;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--color-graphite-700);
+  }
+  .hero-scroll {
+    display: none;
+  }
+  .hero-skip {
+    position: absolute;
+    left: 1rem;
+    bottom: 1rem;
+    z-index: 5;
+    background: var(--color-steel);
+    padding: 0.5rem 0.75rem;
+  }
+
+  /* Vista sequenziale */
+  .hero-seq {
+    display: grid;
+    gap: 3.5rem;
+    padding-block: 4rem 2rem;
+  }
+  .hero-seq-item {
+    display: grid;
+    gap: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--color-graphite-700);
+  }
+  @media (min-width: 768px) {
+    .hero-seq-item {
+      grid-template-columns: 7fr 5fr;
+      align-items: center;
+      gap: 3rem;
+    }
+  }
+  .hero-seq-svg {
+    width: 100%;
+    aspect-ratio: 3 / 2;
+    background: var(--color-graphite-950);
+  }
+  .hero-seq h2.hero-panel-name {
+    font-size: clamp(2.25rem, 4.5vw, 3.75rem);
+  }
+
+  /* Nella vista statica il frame mostra il prospetto completo e l'intro */
+  .hero-panel {
+    display: none;
+  }
+
+  /* ---------- Modalità animata (JS + nessuna preferenza di movimento ridotto) ---------- */
+  :global(html.motion) .hero {
+    height: 500svh;
+  }
+  :global(html.motion) .hero-frame {
+    position: sticky;
+    top: 0;
+    height: 100svh;
+    min-height: 0;
+    overflow: hidden;
+  }
+  :global(html.motion) .hero-seq {
+    display: none;
+  }
+  :global(html.motion) .hero-use {
+    --df: 1;
+    --d1: 1;
+    --d2: 1;
+    --d3: 1;
+    --d4: 1;
+    --d5: 1;
+  }
+  :global(html.motion) .hero-panel {
+    display: block;
+  }
+  :global(html.motion) .hero-panel,
+  :global(html.motion) .hero-intro {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(18px);
+    transition:
+      opacity 0.6s var(--ease-forge),
+      transform 0.6s var(--ease-forge),
+      visibility 0s linear 0.6s;
+  }
+  :global(html.motion) .hero-copy {
+    min-height: 15rem;
+  }
+  :global(html.motion) .hero-copy [data-panel].is-active {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    transition-delay: 0.12s, 0.12s, 0s;
+  }
+  :global(html.motion) .hero-progress {
+    display: block;
+  }
+  :global(html.motion) .hero-titleblock {
+    display: flex;
+  }
+  :global(html.motion) .hero-scroll {
+    display: inline;
+  }
+
+  @media (max-width: 1023px) {
+    /* Su mobile il titolo sta sopra il disegno e sfuma quando partono gli stati */
+    :global(html.motion) .hero-grid {
+      grid-template-rows: minmax(0, 1fr) auto auto;
+      grid-template-areas:
+        'drawing progress'
+        'copy copy'
+        'block block';
+    }
+    :global(html.motion) .hero-head {
+      grid-area: drawing;
+      z-index: 2;
+      align-self: start;
+      pointer-events: none;
+      transition: opacity 0.5s var(--ease-forge);
+    }
+    :global(html.motion) .hero:not([data-state='0']) .hero-head {
+      opacity: 0;
+    }
+    :global(html.motion) .hero-copy {
+      min-height: 12.5rem;
+    }
+    :global(html.motion) .hero-panel-name {
+      font-size: 2.25rem;
+    }
+    .hero-panel-line {
+      font-size: 0.9375rem;
+    }
+    .hero-progress {
+      height: auto;
+    }
+    .hero-progress ol {
+      justify-content: center;
+      gap: 0.25rem;
+    }
+    :global(html.motion) .hero-scroll {
+      display: none;
+    }
+    .hero-tick {
+      width: 1.5rem;
+      height: 2.25rem;
+    }
+    .hero-tick span {
+      width: 1.375rem;
+      height: 1.375rem;
+      font-size: 0.5625rem;
+    }
+  }
+  @media (max-height: 700px) and (max-width: 1023px) {
+    .hero-lede {
+      font-size: 1rem;
+    }
+    :global(html.motion) .hero-copy {
+      min-height: 11rem;
+    }
+  }
+</style>

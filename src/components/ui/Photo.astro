@@ -1,0 +1,55 @@
+---
+import { Picture } from 'astro:assets';
+import { images, type ImageKey } from '@/content/images';
+import PhotoPlaceholder from './PhotoPlaceholder.astro';
+
+/**
+ * Foto con trattamento uniforme (.photo). Legge sempre dal registro immagini.
+ * Le immagini `lowRes` non superano mai la larghezza di una colonna media.
+ */
+interface Props {
+  id: ImageKey;
+  sizes?: string;
+  widths?: number[];
+  class?: string;
+  ratio?: string;
+  loading?: 'lazy' | 'eager';
+  caption?: string;
+}
+const {
+  id,
+  sizes = '(min-width: 1024px) 50vw, 100vw',
+  widths = [480, 800, 1200, 1600],
+  class: cls = '',
+  ratio = '4 / 3',
+  loading = 'lazy',
+  caption,
+} = Astro.props;
+
+const image = images[id];
+const maxW = image.lowRes ? 900 : 1920;
+const safeWidths = widths.filter((w) => w <= maxW);
+const safeSizes = image.lowRes ? `(min-width: 1024px) 40vw, 100vw` : sizes;
+---
+
+{
+  image.src ? (
+    <figure class:list={['photo', cls]} style={`aspect-ratio:${ratio}`}>
+      <Picture
+        src={image.src}
+        alt={image.alt}
+        widths={safeWidths.length ? safeWidths : [maxW]}
+        sizes={safeSizes}
+        formats={['webp']}
+        fallbackFormat="jpg"
+        quality={72}
+        loading={loading}
+        decoding="async"
+        fetchpriority={loading === 'eager' ? 'high' : undefined}
+      />
+      {caption && <figcaption class="sr-only">{caption}</figcaption>}
+    </figure>
+  ) : (
+    <PhotoPlaceholder label={image.label} class={cls} ratio={ratio} />
+  )
+}

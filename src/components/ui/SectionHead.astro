@@ -1,0 +1,26 @@
+---
+/**
+ * Intestazione di sezione stile tavola di progetto:
+ *   02 ——————————— TITOLETTO
+ *   TITOLO GRANDE
+ */
+interface Props {
+  n: string;
+  kicker: string;
+  title: string;
+  as?: 'h2' | 'h3';
+  id?: string;
+  class?: string;
+}
+const { n, kicker, title, as: Tag = 'h2', id, class: cls = '' } = Astro.props;
+---
+
+<header class:list={['section-head', cls]}>
+  <div class="flex items-center gap-4" data-reveal>
+    <span class="label label-red tabular">{n}</span>
+    <span class="rule flex-1" data-reveal="line" aria-hidden="true"></span>
+    <span class="label">{kicker}</span>
+  </div>
+  <Tag id={id} class="mt-8 text-title max-w-[16ch]" data-reveal style="--d:1">{title}</Tag>
+  <slot />
+</header>

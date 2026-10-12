@@ -1,0 +1,263 @@
+---
+/**
+ * Prospetto tecnico della hero, definito UNA volta come sprite e richiamato con <use>.
+ * Ogni gruppo legge variabili CSS ereditate dal <use>:
+ *   --df  disegno facciata (1 = nascosta, 0 = disegnata)   --fo  opacità facciata
+ *   --d1…--d5  disegno dei 5 elementi in ferro              --o1…--o5  opacità
+ * Tutti i tratti hanno pathLength="1" così il disegno va da 1 a 0 per qualsiasi lunghezza.
+ */
+
+// — Generatori di tracciati ripetitivi —
+const range = (from: number, to: number, step: number) => {
+  const out: number[] = [];
+  for (let v = from; v <= to + 0.001; v += step) out.push(v);
+  return out;
+};
+const circle = (cx: number, cy: number, r: number) =>
+  `M${cx - r} ${cy}a${r} ${r} 0 1 0 ${r * 2} 0a${r} ${r} 0 1 0 ${-r * 2} 0`;
+
+// Tratteggio del terreno
+const groundHatch = range(34, 1170, 28)
+  .map((x) => `M${x} 700l-12 14`)
+  .join('');
+
+// 01 Cancello: bacchette verticali e anelli decorativi
+const gateBars = range(144, 316, 12)
+  .filter((x) => x < 220 || x > 236)
+  .map((x) => `M${x} 590V676`)
+  .join('');
+const gateRings = [142, 158, 174, 190, 206, 250, 266, 282, 298, 314]
+  .map((x) => circle(x, 580, 7))
+  .join('');
+
+// 02 Ringhiera: bacchette a passo costante
+const railBalusters = range(575, 706, 9)
+  .filter((x) => x < 635 || x > 645)
+  .map((x) => `M${x} 400V432`)
+  .join('');
+
+// 04 Recinzione: motivo a cerchi intrecciati tagliato al plasma, un tracciato per pannello
+const plasma = (x0: number, y0: number) => {
+  const a = [];
+  for (let i = 0; i <= 4; i++) for (let j = 0; j <= 3; j++) a.push(circle(x0 + 32 * i, y0 + 32 * j, 16));
+  for (let i = 0; i <= 3; i++) for (let j = 0; j <= 2; j++) a.push(circle(x0 + 16 + 32 * i, y0 + 16 + 32 * j, 16));
+  return a.join('');
+};
+
+// 05 Struttura: gradini della scala al soppalco
+const stairTreads = range(1, 13, 1)
+  .map((k) => {
+    const x = 650 + 15.1 * k;
+    const y = 700 - 19.5 * k;
+    return `M${(x - 10).toFixed(1)} ${y.toFixed(1)}H${(x + 6).toFixed(1)}`;
+  })
+  .join('');
+---
+
+<svg class="dl-sprite" aria-hidden="true" focusable="false" width="0" height="0">
+  <defs>
+    <clipPath id="dl-clip-p1"><rect x="898" y="558" width="124" height="92"></rect></clipPath>
+    <clipPath id="dl-clip-p2"><rect x="1034" y="558" width="124" height="92"></rect></clipPath>
+
+    <g id="dl-drawing">
+      <!-- ===== Facciata (sempre presente) ===== -->
+      <g class="dl-facade">
+        <path pathLength="1" d="M20 700H1180"></path>
+        <path pathLength="1" class="thin" d={groundHatch}></path>
+        <!-- corpo edificio + copertina -->
+        <path pathLength="1" d="M400 700V180H880V700"></path>
+        <path pathLength="1" d="M392 180H888V168H392Z"></path>
+        <path pathLength="1" class="thin" d="M400 440H560M720 440H880"></path>
+        <!-- porta d'ingresso e soglia -->
+        <path pathLength="1" d="M595 700V560H685V700M640 560V700M630 628V644M650 628V644"></path>
+        <path pathLength="1" d="M578 700V694H702V700"></path>
+        <!-- finestre piano terra -->
+        <path pathLength="1" d="M455 655V565H535V655ZM450 660H540M745 655V565H825V655ZM740 660H830"></path>
+        <path pathLength="1" class="thin" d="M495 565V655M785 565V655"></path>
+        <!-- piano primo: portafinestra + finestre -->
+        <path pathLength="1" d="M590 440V290H690V440"></path>
+        <path pathLength="1" class="thin" d="M640 290V440"></path>
+        <path pathLength="1" d="M455 390V300H535V390ZM450 395H540M745 390V300H825V390ZM740 395H830"></path>
+        <path pathLength="1" class="thin" d="M495 300V390M785 300V390"></path>
+        <!-- soletta balcone -->
+        <path pathLength="1" d="M560 440H720V452H560Z"></path>
+        <!-- pilastri ingresso carrabile -->
+        <path pathLength="1" d="M90 700V560H126V700M84 560V552H132V560M330 700V560H366V700M324 560V552H372V560"></path>
+        <!-- muretti -->
+        <path pathLength="1" d="M20 650H90M366 650H400"></path>
+        <path pathLength="1" d="M880 654H1186V660H880M1180 660V700"></path>
+        <!-- quote di livello -->
+        <g class="dl-level">
+          <path pathLength="1" d="M1196 440l-7-9h14ZM1196 180l-7-9h14ZM1196 700l-7-9h14Z"></path>
+          <text x="1182" y="436" text-anchor="end">+3.00</text>
+          <text x="1182" y="176" text-anchor="end">+6.40</text>
+          <text x="1182" y="696" text-anchor="end">±0.00</text>
+        </g>
+      </g>
+
+      <!-- ===== 01 Cancello ===== -->
+      <g class="dl-el" style="--d: var(--d1, 0); --o: var(--o1, 1)">
+        <g class="dl-iron">
+          <path pathLength="1" d="M132 690V570H324V690Z"></path>
+          <path pathLength="1" d="M226 570V690M230 570V690"></path>
+          <path pathLength="1" d="M132 590H324M132 676H324"></path>
+          <path pathLength="1" class="fine" d={gateBars}></path>
+          <path pathLength="1" class="fine" d={gateRings}></path>
+          <path pathLength="1" class="fine" d="M126 582h6M126 680h6M324 582h6M324 680h6M220 626h16v12h-16Z"></path>
+        </g>
+        <g class="dl-dim">
+          <path pathLength="1" d="M126 530H330M126 521V539M330 521V539M121 535l10-10M325 535l10-10"></path>
+          <text x="228" y="523" text-anchor="middle">3200</text>
+        </g>
+        <g class="dl-balloon"><circle cx="228" cy="494" r="12"></circle><text x="228" y="498" text-anchor="middle">01</text></g>
+      </g>
+
+      <!-- ===== 02 Ringhiera ===== -->
+      <g class="dl-el" style="--d: var(--d2, 0); --o: var(--o2, 1)">
+        <g class="dl-iron">
+          <path pathLength="1" d="M562 396H718M562 400H718"></path>
+          <path pathLength="1" d="M566 396V440M640 396V440M714 396V440"></path>
+          <path pathLength="1" d="M566 432H714"></path>
+          <path pathLength="1" class="fine" d={railBalusters}></path>
+        </g>
+        <g class="dl-dim">
+          <path pathLength="1" d="M738 396V440M730 396H746M730 440H746M733 401l10-10M733 445l10-10"></path>
+          <text x="758" y="422" text-anchor="middle" transform="rotate(-90 758 418)">1000</text>
+        </g>
+        <g class="dl-balloon"><circle cx="774" cy="372" r="12"></circle><text x="774" y="376" text-anchor="middle">02</text></g>
+      </g>
+
+      <!-- ===== 03 Pensilina ===== -->
+      <g class="dl-el" style="--d: var(--d3, 0); --o: var(--o3, 1)">
+        <g class="dl-iron">
+          <path pathLength="1" d="M556 528H724V538H556Z"></path>
+          <path pathLength="1" class="fine" d="M556 533H724"></path>
+          <path pathLength="1" d="M568 528L606 478M712 528L674 478"></path>
+          <path pathLength="1" class="fine" d="M600 472h12v12h-12ZM668 472h12v12h-12Z"></path>
+        </g>
+        <g class="dl-dim">
+          <path pathLength="1" d="M556 548H724M556 542V554M724 542V554M551 553l10-10M719 553l10-10"></path>
+          <text x="736" y="552">2400</text>
+        </g>
+        <g class="dl-balloon"><circle cx="760" cy="500" r="12"></circle><text x="760" y="504" text-anchor="middle">03</text></g>
+      </g>
+
+      <!-- ===== 04 Recinzione taglio plasma ===== -->
+      <g class="dl-el" style="--d: var(--d4, 0); --o: var(--o4, 1)">
+        <g class="dl-iron">
+          <path pathLength="1" d="M888 654V548H896V654M1024 654V548H1032V654M1160 654V548H1168V654"></path>
+          <path pathLength="1" class="fine" d="M886 548l6-8 6 8M1022 548l6-8 6 8M1158 548l6-8 6 8"></path>
+          <path pathLength="1" d="M896 556H1024V652H896ZM1032 556H1160V652H1032Z"></path>
+          <g clip-path="url(#dl-clip-p1)"><path pathLength="1" class="fine cut" d={plasma(896, 556)}></path></g>
+          <g clip-path="url(#dl-clip-p2)"><path pathLength="1" class="fine cut" d={plasma(1032, 556)}></path></g>
+        </g>
+        <g class="dl-dim">
+          <path pathLength="1" d="M892 526H1028M892 517V535M1028 517V535M887 531l10-10M1023 531l10-10"></path>
+          <text x="960" y="519" text-anchor="middle">2000</text>
+        </g>
+        <g class="dl-balloon"><circle cx="1104" cy="512" r="12"></circle><text x="1104" y="516" text-anchor="middle">04</text></g>
+      </g>
+
+      <!-- ===== 05 Struttura metallica e soppalco ===== -->
+      <g class="dl-el" style="--d: var(--d5, 0); --o: var(--o5, 1)">
+        <g class="dl-iron">
+          <path pathLength="1" d="M416 700V186M426 700V186M634 700V186M644 700V186M852 700V186M862 700V186"></path>
+          <path pathLength="1" d="M416 186H862M416 196H862M416 436H862M416 446H862"></path>
+          <path pathLength="1" class="fine" d="M410 700v-6h22v6M628 700v-6h22v6M846 700v-6h22v6"></path>
+          <path pathLength="1" class="fine" d="M412 432h18v18h-18ZM630 432h18v18h-18ZM848 432h18v18h-18Z"></path>
+          <path pathLength="1" class="fine" d="M426 446L634 694M634 446L426 694"></path>
+          <path pathLength="1" class="fine" d="M644 196L852 436M852 196L644 436"></path>
+          <path pathLength="1" d="M650 700L846 446M662 700L852 454"></path>
+          <path pathLength="1" class="fine" d={stairTreads}></path>
+        </g>
+        <g class="dl-dim">
+          <path pathLength="1" d="M384 446V700M376 446H392M376 700H392M379 451l10-10M379 705l10-10"></path>
+          <text x="372" y="573" text-anchor="middle" transform="rotate(-90 372 573)">2700</text>
+          <text x="652" y="226">HEA 200</text>
+          <text x="440" y="428">IPE 240</text>
+        </g>
+        <g class="dl-balloon"><circle cx="914" cy="318" r="12"></circle><text x="914" y="322" text-anchor="middle">05</text></g>
+      </g>
+    </g>
+  </defs>
+</svg>
+
+<style is:global>
+  .dl-sprite {
+    position: absolute;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+  }
+  /* — Stili del disegno (si applicano anche alle istanze <use>) — */
+  #dl-drawing path,
+  #dl-drawing circle {
+    fill: none;
+    stroke-linecap: butt;
+    stroke-linejoin: miter;
+  }
+  #dl-drawing text {
+    font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    stroke: none;
+  }
+  .dl-facade {
+    opacity: var(--fo, 1);
+  }
+  .dl-facade path {
+    stroke: #edebe6;
+    stroke-opacity: 0.44;
+    stroke-width: var(--sw-facade, 1.2);
+    stroke-dasharray: 1 1;
+    stroke-dashoffset: var(--df, 0);
+  }
+  .dl-facade path.thin {
+    stroke-opacity: 0.26;
+  }
+  .dl-level text {
+    fill: #8a8883;
+    opacity: calc(1 - var(--df, 0));
+  }
+  .dl-level path {
+    stroke-opacity: 0.5;
+  }
+
+  .dl-el {
+    opacity: var(--o);
+  }
+  .dl-el path {
+    stroke-dasharray: 1 1;
+    stroke-dashoffset: var(--d);
+  }
+  .dl-iron path {
+    stroke: #edebe6;
+    stroke-width: var(--sw-iron, 2);
+  }
+  .dl-iron path.fine {
+    stroke-width: var(--sw-fine, 1.3);
+  }
+  .dl-iron path.cut {
+    stroke: #edebe6;
+    stroke-opacity: 0.85;
+  }
+  .dl-dim path {
+    stroke: #8a8883;
+    stroke-width: 0.9;
+  }
+  .dl-dim text {
+    fill: #9a9893;
+    opacity: calc(1 - var(--d) * 2);
+  }
+  .dl-balloon {
+    opacity: calc(1 - var(--d) * 3);
+  }
+  .dl-balloon circle {
+    stroke: #e5584a;
+    stroke-width: 1.2;
+  }
+  .dl-balloon text {
+    fill: #e5584a;
+    font-weight: 600;
+  }
+</style>

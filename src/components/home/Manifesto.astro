@@ -1,0 +1,55 @@
+---
+import SectionHead from '@/components/ui/SectionHead.astro';
+import Photo from '@/components/ui/Photo.astro';
+import Tbc from '@/components/ui/Tbc.astro';
+---
+
+<section class="frame py-28 md:py-40" aria-labelledby="manifesto-title">
+  <SectionHead n="02" kicker="Laboratorio" title="Due generazioni allo stesso banco" id="manifesto-title" />
+
+  <div class="grid-12 mt-14 gap-y-12 md:mt-20">
+    <div class="col-span-4 md:col-span-5 md:col-start-1">
+      <Photo id="phRitratto" ratio="4 / 5" />
+      <div class="dim mt-4" aria-hidden="true"><span>Scafati · Via A. Sant’Agostino 1</span></div>
+    </div>
+
+    <div class="col-span-4 md:col-span-6 md:col-start-7 md:pt-16">
+      <p class="font-display text-[clamp(1.875rem,3.4vw,3rem)] leading-[1.02] font-bold uppercase" data-reveal>
+        Il padre ha le mani e l’occhio del mestiere. Il figlio porta strumenti nuovi e il disegno tecnico.{' '}
+        <span class="text-bone-muted">Al banco ci stanno tutti e due.</span>
+      </p>
+      <div class="mt-10 space-y-5 text-lg leading-relaxed text-bone-muted" data-reveal style="--d:1">
+        <p>
+          Siamo una carpenteria metallica a conduzione familiare. Ogni pezzo nasce nel nostro laboratorio di
+          Scafati: lo misuriamo, lo disegniamo, lo tagliamo, lo saldiamo. Poi lo montiamo noi.
+        </p>
+        <p>
+          Lavoriamo per case, condomini, negozi e capannoni. Nessun passaggio di mano: chi prende le misure
+          è lo stesso che vi consegna il lavoro finito.
+        </p>
+        <p class="text-sm"><Tbc text="nomi dei titolari e anno di inizio attività" /></p>
+      </div>
+
+      <dl class="mt-14 grid grid-cols-2 border-t border-graphite-700" data-reveal style="--d:2">
+        <div class="border-b border-graphite-700 py-5 pr-4">
+          <dt class="label">Settori</dt>
+          <dd class="mt-2 font-display text-2xl font-bold uppercase">Civile · Industriale</dd>
+        </div>
+        <div class="border-b border-l border-graphite-700 py-5 pl-5">
+          <dt class="label">Ciclo</dt>
+          <dd class="mt-2 font-display text-2xl font-bold uppercase">Progetto → Posa</dd>
+        </div>
+        <div class="py-5 pr-4">
+          <dt class="label">Produzione</dt>
+          <dd class="mt-2 font-display text-2xl font-bold uppercase">In laboratorio</dd>
+        </div>
+        <div class="border-l border-graphite-700 py-5 pl-5">
+          <dt class="label">Attivi dal</dt>
+          <dd class="mt-2 text-sm"><Tbc text="anno" /></dd>
+        </div>
+      </dl>
+
+      <a href="/chi-siamo" class="link-draw mt-10 inline-block font-semibold">La nostra storia →</a>
+    </div>
+  </div>
+</section>

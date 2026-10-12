@@ -1,0 +1,68 @@
+---
+import SectionHead from '@/components/ui/SectionHead.astro';
+import Photo from '@/components/ui/Photo.astro';
+import { services } from '@/content/services';
+---
+
+<section class="frame py-28 md:py-40" aria-labelledby="servizi-title">
+  <SectionHead n="03" kicker="Cosa facciamo" title="Ferro per la casa, il negozio, il capannone" id="servizi-title" />
+
+  <ol class="mt-14 border-t border-graphite-700 md:mt-20">
+    {
+      services.map((s, i) => (
+        <li class="svc" data-reveal style={`--d:${i % 3}`}>
+          <a href={s.href} class="svc-link grid-12 items-center py-6 md:py-8">
+            <span class="label label-red tabular col-span-1 self-start pt-2 md:pt-4">
+              {String(i + 1).padStart(2, '0')}
+            </span>
+            <h3 class="svc-name col-span-3 md:col-span-5">{s.name}</h3>
+            <p class="col-span-3 col-start-2 mt-2 text-[0.9375rem] leading-relaxed text-bone-muted md:col-span-4 md:col-start-auto md:mt-0">
+              {s.line}
+            </p>
+            <div class="svc-thumb hidden md:block md:col-span-2">
+              <Photo id={s.image} ratio="4 / 3" sizes="(min-width: 768px) 14vw, 40vw" widths={[320, 480]} />
+            </div>
+          </a>
+        </li>
+      ))
+    }
+  </ol>
+</section>
+
+<style>
+  .svc {
+    border-bottom: 1px solid var(--color-graphite-700);
+  }
+  .svc-link {
+    position: relative;
+  }
+  .svc-name {
+    font-size: clamp(2rem, 4.2vw, 3.75rem);
+    line-height: 0.92;
+    transition: transform 0.6s var(--ease-forge), color 0.4s;
+  }
+  .svc-link::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -1px;
+    height: 1px;
+    width: 100%;
+    background: var(--color-brand);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.7s var(--ease-forge);
+  }
+  .svc-link:hover::after,
+  .svc-link:focus-visible::after {
+    transform: scaleX(1);
+  }
+  .svc-link:hover .svc-name {
+    transform: translateX(0.5rem);
+  }
+  .svc-thumb {
+    max-width: 11rem;
+    justify-self: end;
+    width: 100%;
+  }
+</style>

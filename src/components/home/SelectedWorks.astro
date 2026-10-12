@@ -1,0 +1,58 @@
+---
+import SectionHead from '@/components/ui/SectionHead.astro';
+import Photo from '@/components/ui/Photo.astro';
+import { featuredWorks, workCategories } from '@/content/works';
+import { tbcHtml } from '@/lib/tbc';
+
+// Composizione asimmetrica: grande / piccola, poi piccola / grande
+const layout = [
+  { col: 'md:col-span-7', ratio: '4 / 3', sizes: '(min-width: 768px) 58vw, 100vw', offset: '' },
+  { col: 'md:col-span-4 md:col-start-9', ratio: '4 / 5', sizes: '(min-width: 768px) 33vw, 100vw', offset: 'md:mt-40' },
+  { col: 'md:col-span-4 md:col-start-2', ratio: '4 / 5', sizes: '(min-width: 768px) 33vw, 100vw', offset: '' },
+  { col: 'md:col-span-6 md:col-start-7', ratio: '3 / 2', sizes: '(min-width: 768px) 50vw, 100vw', offset: 'md:-mt-24' },
+];
+---
+
+<section class="py-28 md:py-40 bg-graphite-950 border-y border-graphite-800" aria-labelledby="lavori-title">
+  <div class="frame">
+    <SectionHead n="04" kicker="Lavori selezionati" title="Misurato, saldato, montato" id="lavori-title" />
+
+    <ul class="grid-12 mt-14 gap-y-14 md:mt-20 md:gap-y-20">
+      {
+        featuredWorks.slice(0, 4).map((w, i) => {
+          const l = layout[i];
+          return (
+            <li class:list={['col-span-4', l.col, l.offset]} data-reveal>
+              <a href={`/lavori#${w.id}`} class="work group block">
+                <Photo id={w.image} ratio={l.ratio} sizes={l.sizes} class="work-photo" />
+                <div class="mt-4 flex items-start justify-between gap-4 border-t border-graphite-700 pt-4">
+                  <div>
+                    <h3 class="font-display text-2xl font-bold uppercase leading-none md:text-3xl">{w.title}</h3>
+                    <p class="mt-2 text-sm text-bone-muted" set:html={`${tbcHtml(w.location)} · ${w.type}`} />
+                  </div>
+                  <span class="label shrink-0">{workCategories[w.category]}</span>
+                </div>
+              </a>
+            </li>
+          );
+        })
+      }
+    </ul>
+
+    <div class="mt-20 flex justify-end">
+      <a href="/lavori" class="btn btn-ghost">Tutti i lavori <span class="btn-arrow" aria-hidden="true">→</span></a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .work :global(.work-photo img) {
+    transition:
+      transform 1.2s var(--ease-forge),
+      filter 0.8s;
+  }
+  .work:hover :global(.work-photo img) {
+    transform: scale(1.035);
+    filter: saturate(0.85) contrast(1.08);
+  }
+</style>

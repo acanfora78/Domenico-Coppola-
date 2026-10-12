@@ -1,0 +1,10 @@
+---
+/** Placeholder visibile per contenuti da confermare col cliente */
+interface Props {
+  text: string;
+  kind?: 'DA CONFERMARE' | 'DA DEFINIRE';
+}
+const { text, kind = 'DA CONFERMARE' } = Astro.props;
+---
+
+<span class="tbc">[{kind}: {text}]</span>

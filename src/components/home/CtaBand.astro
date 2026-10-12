@@ -1,0 +1,57 @@
+---
+import { site } from '@/content/site';
+---
+
+<section class="cta relative overflow-hidden border-t border-graphite-800 py-28 md:py-40" aria-labelledby="cta-title">
+  <div class="frame relative">
+    <p class="label"><span class="label-red">07</span> — Preventivo gratuito e senza impegno <span class="tbc">[DA CONFERMARE]</span></p>
+    <h2 id="cta-title" class="mt-8 text-display max-w-[14ch]" data-reveal>
+      Prima le misure. <span class="text-bone-muted">Poi il ferro.</span>
+    </h2>
+    <p class="mt-8 max-w-xl text-lg leading-relaxed text-bone-muted" data-reveal style="--d:1">
+      Raccontateci cosa vi serve. Veniamo a vedere, prendiamo le misure e vi diamo un preventivo chiaro.
+    </p>
+    <div class="mt-10 flex flex-wrap gap-3" data-reveal style="--d:2">
+      <a href="/contatti" class="btn btn-primary">Richiedi un sopralluogo <span class="btn-arrow" aria-hidden="true">→</span></a>
+      <a href={site.phone.href} class="btn btn-ghost tabular">Chiama {site.phone.display}</a>
+      <a href={site.whatsapp} class="btn btn-ghost" target="_blank" rel="noopener">WhatsApp</a>
+    </div>
+
+    <!-- Quota decorativa -->
+    <div class="pointer-events-none absolute right-[clamp(1rem,4vw,3.5rem)] top-0 bottom-0 hidden w-10 md:block" aria-hidden="true">
+      <div class="cta-dim">
+        <span>H 2400</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .cta-dim {
+    position: absolute;
+    inset: 0;
+    border-block: 1px solid var(--color-graphite-600);
+  }
+  .cta-dim::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: var(--color-graphite-600);
+  }
+  .cta-dim span {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-90deg);
+    padding: 0 0.5rem;
+    background: var(--color-steel);
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.1em;
+    color: var(--color-bone-faint);
+    white-space: nowrap;
+  }
+</style>

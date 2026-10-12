@@ -1,0 +1,221 @@
+---
+import { nav, site } from '@/content/site';
+import Logo from '@/components/ui/Logo.astro';
+
+const path = Astro.url.pathname.replace(/\/$/, '') || '/';
+const menu = [
+  { href: '/', label: 'Home' },
+  ...nav,
+  { href: '/ringhiere', label: 'Ringhiere' },
+  { href: '/pensiline-e-tettoie', label: 'Pensiline e tettoie' },
+  { href: '/infissi-blindati', label: 'Infissi blindati' },
+  { href: '/contatti', label: 'Contatti' },
+];
+---
+
+<a href="#contenuto" class="skip-link">Vai al contenuto</a>
+
+<header class="site-header" data-header>
+  <div class="frame flex h-full items-center justify-between gap-6">
+    <a href="/" class="shrink-0">
+      <Logo />
+    </a>
+
+    <nav aria-label="Principale" class="hidden lg:block">
+      <ul class="flex items-center gap-7 text-[0.9375rem]">
+        {
+          nav.map((item) => (
+            <li>
+              <a
+                href={item.href}
+                class="link-draw text-bone/85 hover:text-bone"
+                aria-current={path === item.href ? 'page' : undefined}
+              >
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <div class="flex items-center gap-2">
+      <a href={site.phone.href} class="hidden xl:inline-flex btn btn-ghost !min-h-11 !py-2 !text-sm tabular">
+        {site.phone.display}
+      </a>
+      <a href="/contatti" class="hidden sm:inline-flex btn btn-primary !min-h-11 !py-2 !text-sm">
+        Richiedi un sopralluogo
+      </a>
+      <!-- Tap-to-call su mobile -->
+      <a href={site.phone.href} class="icon-btn lg:hidden" aria-label={`Chiama ${site.phone.display}`}>
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6">
+          <path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 6 6L16 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2Z"></path>
+        </svg>
+      </a>
+      <button type="button" class="icon-btn lg:hidden" data-menu-open aria-haspopup="dialog" aria-controls="menu">
+        <span class="sr-only">Apri il menu</span>
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" stroke="currentColor" stroke-width="1.6">
+          <path d="M3 8h18M3 16h12"></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- Menu mobile a schermo intero: rosso pieno, richiamo al sito attuale -->
+<dialog id="menu" class="menu" aria-label="Menu">
+  <div class="frame flex h-full flex-col pt-4 pb-8">
+    <div class="flex h-14 items-center justify-between">
+      <Logo mono />
+      <button type="button" class="icon-btn !border-bone/40" data-menu-close>
+        <span class="sr-only">Chiudi il menu</span>
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" stroke="currentColor" stroke-width="1.6">
+          <path d="M5 5l14 14M19 5L5 19"></path>
+        </svg>
+      </button>
+    </div>
+    <nav aria-label="Menu mobile" class="mt-8 flex-1 overflow-y-auto">
+      <ol class="menu-list">
+        {
+          menu.map((item, i) => (
+            <li>
+              <a href={item.href} aria-current={path === item.href ? 'page' : undefined}>
+                <span class="menu-n tabular">{String(i + 1).padStart(2, '0')}</span>
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+      </ol>
+    </nav>
+    <div class="mt-6 grid gap-3 border-t border-bone/30 pt-6">
+      <a href={site.phone.href} class="btn menu-call justify-between">
+        Chiama {site.phone.display} <span aria-hidden="true">→</span>
+      </a>
+      <p class="text-sm text-bone/85">{site.address.street}, {site.address.postalCode} {site.address.city} ({site.address.province})</p>
+    </div>
+  </div>
+</dialog>
+
+<script>
+  import { lenis } from '@/scripts/smooth';
+
+  const header = document.querySelector<HTMLElement>('[data-header]')!;
+  const onScroll = () => header.classList.toggle('is-solid', window.scrollY > 24);
+  onScroll();
+  window.addEventListener('scroll', onScroll, { passive: true });
+
+  const menu = document.querySelector<HTMLDialogElement>('#menu')!;
+  const openBtn = document.querySelector<HTMLButtonElement>('[data-menu-open]')!;
+  openBtn.addEventListener('click', () => {
+    menu.showModal();
+    lenis?.stop();
+  });
+  menu.querySelector('[data-menu-close]')!.addEventListener('click', () => menu.close());
+  menu.addEventListener('close', () => {
+    lenis?.start();
+    openBtn.focus();
+  });
+  menu.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => menu.close()));
+</script>
+
+<style>
+  .skip-link {
+    position: absolute;
+    left: 1rem;
+    top: -4rem;
+    z-index: 100;
+    padding: 0.75rem 1rem;
+    background: var(--color-bone);
+    color: var(--color-steel);
+    font-weight: 600;
+  }
+  .skip-link:focus {
+    top: 1rem;
+  }
+  .site-header {
+    position: fixed;
+    inset: 0 0 auto;
+    z-index: 50;
+    height: 4.5rem;
+    border-bottom: 1px solid transparent;
+    transition:
+      background-color 0.4s,
+      border-color 0.4s,
+      backdrop-filter 0.4s;
+  }
+  .site-header.is-solid {
+    background: rgb(14 15 17 / 0.82);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom-color: var(--color-graphite-800);
+  }
+  .icon-btn {
+    display: inline-grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border: 1px solid var(--color-graphite-600);
+    color: var(--color-bone);
+  }
+  @media (min-width: 1024px) {
+    .icon-btn.lg\:hidden {
+      display: none;
+    }
+  }
+  [aria-current='page'] {
+    color: var(--color-bone);
+    background-size: 100% 1px;
+  }
+
+  .menu {
+    width: 100%;
+    max-width: none;
+    height: 100dvh;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: var(--color-brand);
+    color: var(--color-bone);
+  }
+  .menu::backdrop {
+    background: var(--color-brand);
+  }
+  .menu[open] {
+    animation: menu-in 0.45s var(--ease-forge);
+  }
+  @keyframes menu-in {
+    from {
+      clip-path: inset(0 0 100% 0);
+    }
+    to {
+      clip-path: inset(0 0 0 0);
+    }
+  }
+  .menu-list a {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    padding-block: 0.3rem;
+    font-family: var(--font-display);
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: clamp(2.25rem, 10vw, 3.5rem);
+    line-height: 1;
+  }
+  .menu-n {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 400;
+    color: var(--color-bone);
+    opacity: 0.85;
+  }
+  .menu-call {
+    background: var(--color-bone);
+    color: var(--color-steel);
+  }
+  .menu :focus-visible {
+    outline-color: var(--color-bone);
+  }
+</style>

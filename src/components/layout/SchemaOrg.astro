@@ -1,0 +1,35 @@
+---
+import { site } from '@/content/site';
+
+/** LocalBusiness (HomeAndConstructionBusiness) — in ogni pagina tramite il layout */
+const business = {
+  '@context': 'https://schema.org',
+  '@type': 'HomeAndConstructionBusiness',
+  '@id': `${site.url}/#azienda`,
+  name: site.name,
+  url: site.url,
+  telephone: site.phone.e164,
+  vatID: `IT${site.vat}`,
+  image: `${site.url}/og-default.jpg`,
+  logo: `${site.url}/favicon.svg`,
+  description:
+    'Carpenteria metallica artigianale a Scafati (SA): cancelli, serrande, recinzioni, ringhiere, pensiline, infissi blindati e strutture metalliche. Progettazione, produzione in laboratorio e posa.',
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: site.address.street,
+    postalCode: site.address.postalCode,
+    addressLocality: site.address.city,
+    addressRegion: site.address.province,
+    addressCountry: site.address.country,
+  },
+  geo: { '@type': 'GeoCoordinates', latitude: site.geo.lat, longitude: site.geo.lng },
+  // TODO: aggiungere area napoletana/vesuviana se confermata
+  areaServed: [
+    { '@type': 'City', name: 'Scafati' },
+    { '@type': 'AdministrativeArea', name: 'Provincia di Salerno' },
+  ],
+  // TODO: openingHoursSpecification, sameAs (Instagram) quando confermati
+};
+---
+
+<script type="application/ld+json" set:html={JSON.stringify(business)} />

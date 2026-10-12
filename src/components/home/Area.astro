@@ -1,0 +1,77 @@
+---
+import SectionHead from '@/components/ui/SectionHead.astro';
+import Tbc from '@/components/ui/Tbc.astro';
+import { site } from '@/content/site';
+---
+
+<section class="frame py-28 md:py-40" aria-labelledby="zona-title">
+  <SectionHead n="06" kicker="Zona servita" title="Scafati e tutta la provincia di Salerno" id="zona-title" />
+
+  <div class="grid-12 mt-14 items-center gap-y-12 md:mt-20">
+    <!-- Schema a raggi: non è una mappa, è una tavola di distanze dal laboratorio -->
+    <figure class="col-span-4 md:col-span-6" aria-hidden="true" data-reveal>
+      <svg viewBox="0 0 500 500" class="area-svg w-full">
+        <g class="rings">
+          <circle cx="250" cy="250" r="70"></circle>
+          <circle cx="250" cy="250" r="140"></circle>
+          <circle cx="250" cy="250" r="210"></circle>
+        </g>
+        <path class="axes" d="M250 20V480M20 250H480"></path>
+        <g class="ticks">
+          <text x="256" y="174">10 km</text>
+          <text x="256" y="104">20 km</text>
+          <text x="256" y="34">30 km</text>
+        </g>
+        <circle cx="250" cy="250" r="5" class="center"></circle>
+        <circle cx="250" cy="250" r="14" class="center-ring"></circle>
+        <text x="262" y="276" class="center-label">SCAFATI</text>
+        <text x="262" y="292" class="center-sub">Laboratorio</text>
+      </svg>
+    </figure>
+
+    <div class="col-span-4 md:col-span-5 md:col-start-8">
+      <p class="text-lg leading-relaxed text-bone-muted" data-reveal>
+        Il sopralluogo lo facciamo noi, sul posto. Lavoriamo a Scafati, nell’Agro nocerino-sarnese e in tutta la
+        provincia di Salerno.
+      </p>
+      <p class="mt-3 text-sm"><Tbc text="anche area napoletana / vesuviana?" /></p>
+      <ul class="mt-10 grid grid-cols-2 gap-x-6 border-t border-graphite-700 text-[0.9375rem]" data-reveal style="--d:1">
+        {
+          site.area.towns.map((t) => (
+            <li class="border-b border-graphite-800 py-2.5">{t}</li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+</section>
+
+<style>
+  .area-svg .rings circle {
+    fill: none;
+    stroke: var(--color-graphite-600);
+    stroke-dasharray: 3 5;
+  }
+  .area-svg .axes {
+    stroke: var(--color-graphite-700);
+  }
+  .area-svg text {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    fill: var(--color-bone-faint);
+    letter-spacing: 0.06em;
+  }
+  .area-svg .center {
+    fill: var(--color-brand);
+  }
+  .area-svg .center-ring {
+    fill: none;
+    stroke: var(--color-brand);
+  }
+  .area-svg .center-label {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 800;
+    fill: var(--color-bone);
+  }
+</style>
